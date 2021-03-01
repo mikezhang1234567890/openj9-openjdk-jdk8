@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.CodeSigner;
@@ -1082,9 +1083,15 @@ final class ClassFinder implements PrivilegedExceptionAction
 	String path = name.replace('.', '/').concat(".class");                   
         try {                                                                    
             Resource res = ucp.getResource(path, false, classloader, showClassLoading(name)); 
-            if (res != null)                                                     
+            if (res != null) {
+                if (name.contains("javasoft.sqe.tests.lang")) {
+                    System.out.println("ClassFinder - found: " + name + " using CL: " + classloader);
+                    System.out.println("ClassFinder - " + res.getName() + " len: " + res.getContentLength());
+                }
                 return defineClass(name, res);                                   
-        } catch (IOException e) {                                                
+            }                               
+        } catch (IOException e) {     
+            e.printStackTrace(System.out);                                          
                 throw new ClassNotFoundException(name, e);                       
         }                                                                        
         return null;                                                             
